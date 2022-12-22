@@ -1,0 +1,36 @@
+#include <DHT.h> // Подключаем библиотеку для работы с датчиком
+#define DHTPIN 9 // Считывающий пин с датчика
+#define DHTTYPE DHT11 // Модель датчика
+#define tPIN 8 // Определяем пин, используемый для подключения реле
+#define hPIN 7
+DHT dht(DHTPIN, DHTTYPE); // Создаем объект dht
+int temp = 20;
+boolean GERMEZ = false;
+boolean XLAD = true;
+void setup() {
+Serial.begin(9600); // Инициализируем COM-порт
+dht.begin(); // Инициализируем датчик
+pinMode(tPIN, OUTPUT); // Определяем пин для управления температурой как Вывод
+digitalWrite(tPIN, HIGH); // Притягиваем пин к начальному статусу (Выкл)
+pinMode(hPIN, OUTPUT); // Определяем пин для управления температурой как Вывод
+digitalWrite(hPIN, HIGH); // Притягиваем пин к начальному статусу (Выкл)
+}
+void loop() {
+int t = dht.readTemperature(); // Считываем температуру
+delay(10000); // Задержка в 10 секунду
+Serial.print("t="); // Отправляем информацю о климате на COM-порт
+Serial.print(t);
+if (t > temp) {
+Serial.print("\t Превышение температуры! \t");
+if (GERMEZ && XLAD) {
+Serial.print("Запуск двигателя охлаждения!\t");
+digitalWrite(tPIN, LOW); // Притягиваем пин к начальному статусу (Выкл)
+Serial.print("Первое реле ВКЛ \t");
+digitalWrite(hPIN, LOW); // Притягиваем пин к начальному статусу (Выкл)
+Serial.print("Второе реле ВКЛ \t");
+Serial.print("Двигатель запущен! \t");
+} else {
+Serial.print("Проверьте герметизацию и/или наличие хладогента");
+}
+}
+}
